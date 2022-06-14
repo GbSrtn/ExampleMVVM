@@ -62,23 +62,19 @@ class Model(private val dataSource: DataSource) {
 
     fun start(textCallBack: TextCallBack) {
         callback = textCallBack
-        Log.d(TAG, "start: count is $count")
         if (count < 0)
             count = dataSource.getInt(COUNTER_KEY)
-        Log.d(TAG, "started with count $count")
         timer = Timer()
         timer?.scheduleAtFixedRate(timerTask, 0,1000)
     }
 
     fun stop() {
-        Log.d(TAG, "stop with count $count")
         dataSource.saveInt(COUNTER_KEY,count)
         timer?.cancel()
         timer = null
     }
 
     companion object{
-        private const val TAG = "ViewModelTag"
         private const val COUNTER_KEY = "counting"
     }
 }
