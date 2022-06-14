@@ -47,16 +47,18 @@ interface TextCallBack {
     fun updateText(str: String)
 }
 
-class Model(private val dataSource: DataSource) {
-
-    private var timer: Timer? = null
-    private val timerTask
-        get() = object : TimerTask() {
-            override fun run() {
+class Model(
+    private val dataSource: DataSource,
+    private val timeTicker: TimeTicker
+    ) {
+    private val tickerCallBack
+        get() = object : TimeTicker.CallBack {
+            override fun tick() {
                 count++
                 callback?.updateText(count.toString())
             }
         }
+
     private var callback: TextCallBack? = null
     private var count = -1
 
@@ -64,14 +66,12 @@ class Model(private val dataSource: DataSource) {
         callback = textCallBack
         if (count < 0)
             count = dataSource.getInt(COUNTER_KEY)
-        timer = Timer()
-        timer?.scheduleAtFixedRate(timerTask, 0,1000)
+        timeTicker.start(tickerCallBack)
     }
 
     fun stop() {
         dataSource.saveInt(COUNTER_KEY,count)
-        timer?.cancel()
-        timer = null
+        timeTicker.stop()
     }
 
     companion object{
